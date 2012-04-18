@@ -33,6 +33,12 @@ var respond = function(req, res) {
     });
     if (! success)
       return;
+  } else if (req.url === "/headers") {
+    res.statusCode = 201;
+    res.setHeader("A-Silly-Header", "Tis a");
+    res.setHeader("Another-Silly-Header", "Silly place.");
+    res.end("A RESPONSE WITH SOME HEADERS");
+    return;
   }
 
   var chunks = [];

@@ -101,6 +101,9 @@ Meteor.http = Meteor.http || {};
         response.data = function() {
           return JSON.parse(response.content());
         };
+        response.headers = function () {
+          return res.headers;
+        };
 
         if (res.statusCode >= 400)
           error = new Error("failed");

@@ -262,6 +262,17 @@ testAsyncMulti("httpcall - headers", [
         test.equal(data.headers['test-header'], "Value");
         test.equal(data.headers['another'], "Value2");
       }));
+
+    Meteor.http.call(
+      "GET", url_prefix()+"/headers",
+      expect(function(error, result) {
+        test.isFalse(error);
+        test.isTrue(result);
+
+        test.equal(result.statusCode, 201);
+        test.equal(result.headers()['a-silly-header'], "Tis a");
+        test.equal(result.headers()['another-silly-header'], "Silly place.");
+      }));
   }
 ]);
 

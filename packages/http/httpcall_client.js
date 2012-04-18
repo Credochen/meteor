@@ -108,6 +108,17 @@ Meteor.http = Meteor.http || {};
             response.data = function() {
               return JSON.parse(response.content());
             };
+            response.headers = function () {
+              var header_str = xhr.getAllResponseHeaders();
+              var headers_raw = header_str.split(/\r?\n/);
+              var headers = {};
+              _.each(headers_raw, function (h) {
+                var m = /^(.*?):(?:\s+)(.*)$/.exec(h);
+                if (m && m.length === 3)
+                  headers[m[1].toLowerCase()] = m[2];
+              });
+              return headers;
+            };
 
             var error = null;
             if (xhr.status >= 400)
