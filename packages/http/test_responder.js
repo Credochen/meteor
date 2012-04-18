@@ -21,8 +21,12 @@ var respond = function(req, res) {
     return;
   } else if (req.url.slice(0,6) === "/login") {
     var connect = __meteor_bootstrap__.require('connect');
+    var username = 'meteor';
     // get password from query string
-    var checker = connect.basicAuth('meteor', req.url.slice(7));
+    var password = req.url.slice(7);
+    // realm is displayed in dialog box if one pops up, avoid confusion
+    var realm = TEST_RESPONDER_ROUTE+"/login";
+    var checker = connect.basicAuth(username, password, realm);
     var success = false;
     checker(req, res, function() {
       success = true;

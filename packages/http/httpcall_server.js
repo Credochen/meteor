@@ -34,6 +34,13 @@ Meteor.http = Meteor.http || {};
     if (options.data)
       content = JSON.stringify(options.data);
 
+    var auth_header;
+    if (options.auth) {
+      if (options.auth.indexOf(':') < 0)
+        throw new Error('auth option should be of the form "username:password"');
+      auth_header = "Basic "+
+        (new Buffer(options.auth, "ascii")).toString("base64");
+    }
 
     ////////// Callback wrapping //////////
 
@@ -68,6 +75,10 @@ Meteor.http = Meteor.http || {};
 
     ////////// Kickoff! //////////
 
+    var headers = {};
+    if (auth_header)
+      headers['Authorization'] = auth_header;
+
     var req_options = {
       url: new_url,
       method: method,
@@ -75,7 +86,8 @@ Meteor.http = Meteor.http || {};
       jar: false,
       timeout: options.timeout,
       body: content,
-      followRedirect: options.followRedirects
+      followRedirect: options.followRedirects,
+      headers: headers
     };
 
     request(req_options, function(error, res, body) {

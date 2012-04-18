@@ -184,8 +184,8 @@ testAsyncMulti("httpcall - methods", [
     };
 
     test_method("POST");
-    test_method("PUT", Meteor.is_client);
-    test_method("DELETE", Meteor.is_client);
+    test_method("PUT");
+    test_method("DELETE");
   },
 
   function(test, expect) {
@@ -214,12 +214,41 @@ testAsyncMulti("httpcall - methods", [
   }
 ]);
 
+testAsyncMulti("httpcall - http auth", [
+  function(test, expect) {
+    // Test basic auth
+
+    // Unfortunately, any failed auth will result in a browser
+    // password prompt.  So we don't test auth failure, only
+    // success.
+
+    var password = Meteor.uuid().replace(/[^0-9a-zA-Z]/g, '');
+    Meteor.http.call(
+      "GET", url_prefix()+"/login?"+password,
+      { auth: "meteor:"+password },
+      expect(function(error, result) {
+        // should succeed
+        test.isFalse(error);
+        test.isTrue(result);
+        test.equal(result.statusCode, 200);
+        var data = result.data();
+        test.equal(data.url, "/login?"+password);
+      }));
+
+    // test fail on malformed username:password
+    test.throws(function() {
+      Meteor.http.call(
+        "GET", url_prefix()+"/login?"+password,
+        { auth: "fooooo" },
+        function() { throw new Error("can't get here"); });
+    });
+  }
+]);
 
 // TO TEST:
 // - form-encoding params
 // - https
 // - headers
 // - cookies?
-// - basicauth
 // - human-readable error reason/cause?
 // - data parse error

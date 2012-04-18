@@ -19,9 +19,6 @@ Meteor.http = Meteor.http || {};
         "Can't make a blocking HTTP call from the client; callback required.");
 
     method = (method || "").toUpperCase();
-    // XXX why?
-    if (method !== "GET" && method !== "POST")
-      throw new Error("HTTP method on client must be GET or POST.");
 
     var query_match = /^(.*?)(\?.*)?$/.exec(url);
     url = Meteor.http._buildUrl(query_match[1], query_match[2],
@@ -34,6 +31,14 @@ Meteor.http = Meteor.http || {};
     if (options.followRedirects === false)
       throw new Error("Option followRedirects:false not supported on client.");
 
+    var username, password;
+    if (options.auth) {
+      var colonLoc = options.auth.indexOf(':');
+      if (colonLoc < 0)
+        throw new Error('auth option should be of the form "username:password"');
+      username = options.auth.substring(0, colonLoc);
+      password = options.auth.substring(colonLoc+1);
+    }
 
     ////////// Callback wrapping //////////
 
@@ -66,7 +71,7 @@ Meteor.http = Meteor.http || {};
       else
         throw new Error("Can't create XMLHttpRequest"); // ???
 
-      xhr.open(method, url, true);
+      xhr.open(method, url, true, username, password);
 
       // setup timeout
       var timed_out = false;
