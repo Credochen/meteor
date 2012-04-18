@@ -73,6 +73,11 @@ Meteor.http = Meteor.http || {};
 
       xhr.open(method, url, true, username, password);
 
+      if (options.headers)
+        for (var k in options.headers)
+          xhr.setRequestHeader(k, options.headers[k]);
+
+
       // setup timeout
       var timed_out = false;
       var timer;

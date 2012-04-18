@@ -245,6 +245,27 @@ testAsyncMulti("httpcall - http auth", [
   }
 ]);
 
+testAsyncMulti("httpcall - headers", [
+  function(test, expect) {
+    Meteor.http.call(
+      "GET", url_prefix()+"/foo",
+      {headers: { "Test-header": "Value",
+                  "another": "Value2" } },
+      expect(function(error, result) {
+        test.isFalse(error);
+        test.isTrue(result);
+
+        test.equal(result.statusCode, 200);
+        var data = result.data();
+        test.equal(data.url, "/foo");
+        test.equal(data.method, "GET");
+        test.equal(data.headers['test-header'], "Value");
+        test.equal(data.headers['another'], "Value2");
+      }));
+  }
+]);
+
+
 // TO TEST:
 // - form-encoding params
 // - https
